@@ -1,3 +1,5 @@
+echo Copy executable to /usr/local/bin..
 cp ./readelf.py /usr/local/bin
 mv /usr/local/bin/readelf.py /usr/local/bin/readelf
 chmod +x /usr/local/bin/readelf
+echo Done.
