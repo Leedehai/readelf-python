@@ -445,9 +445,9 @@ def readelf(elf, args):
 	if ei_data == 0:
 		print_err('Invalid data encoding')
 	elif ei_data == 1:
-		e_data = 'ELFDATA2LSB (little endian)'
+		e_data = 'little endian'
 	elif ei_data == 2:
-		e_data = 'ELFDATA2MSB (big endian)'
+		e_data = 'big endian'
 
 	ei_type  = struct.unpack('H', elf.read(2))[0]
 	if ei_type == 0:
@@ -487,29 +487,28 @@ def readelf(elf, args):
 		e_phoff, e_shoff, e_flags, e_ehsize, e_phentsize, e_phnum, e_shentsize, e_shnum, e_shstrndx = struct.unpack('QQIHHHHHH', elf.read(32))
 	if print_elf_header:
 		print("")
-		print("ELF Header (offset for 32/64-bit) ==========")
-		print("Identification (0x0-0x8):                       %02x %02x %02x %02x (Magic: \\x7ELF)" %(ei_mag0, ei_mag1, ei_mag2, ei_mag3))
-		print("                                                %02x %02x %02x %02x %02x" %(ei_class, ei_data, ei_version, ei_osabi, ei_abiversion))
-		print("Class (0x4):                                    0x%02x\t%s" %(ei_class, e_class))
-		print("Data (0x5):                                     0x%02x\t%s" %(ei_data, e_data))
-		print("Version (0x6, same as 0x14):                    0x%02x\t%s" %(ei_version, e_version))
-		print("ABI of target system (0x7):                     0x%02x\t%s" %(ei_osabi, e_osabi))
-		print("ABI Version (0x8), undefined for Linux:         0x%02x\t%s" %(ei_version, e_version))
-		print("Padding (0x9-0xf):                              all 0")
-		print("Type (0x10):                                    0x%02x\t%s" %(ei_type, e_type))
-		print("Machine (0x12):                                 0x%02x\t%s" %(ei_machine, e_machine))
-		print("Version (0x14, same as 0x6):                    0x%x\t%s" %(ei_version, e_version))
-		print("Entry point address (0x18):                     0x%x" %(e_entry));
-		print("Start of program headers (0x1c/0x20):           0x%x\t%d" % (e_phoff, e_phoff))
-		print("Start of section headers (0x20/0x28):           0x%x\t%d (bytes into file)" % (e_shoff, e_shoff))
-		print("Flags (0x24/0x30):                              0x%01x" % e_flags)
-		print("Size of this header (0x28/0x34):                0x%x\t%d (bytes)" % (e_ehsize, e_ehsize))
-		print("Size of program header (0x2a/0x36):             0x%x\t%d (bytes)" % (e_phentsize, e_phentsize))
-		print("Number of program headers (0x2c/0x38):          0x%x\t%d" % (e_shnum, e_shnum))
-		print("Size of section headers (0x2e/0x3a):            0x%x\t%d (bytes)" % (e_shentsize, e_shentsize))
-		print("Number of section headers (0x30/0x3c):          0x%x\t%d" % (e_shnum, e_shnum))
-		print("Index of section header table names(0x32/0x3e): 0x%x\t%d" % (e_shstrndx, e_shstrndx))
-
+		print("ELF Header (offset for 32/64-bit) =====================")
+		print("Identification (0x0-0x8):                        %02x %02x %02x %02x (Magic: \\x7ELF)" %(ei_mag0, ei_mag1, ei_mag2, ei_mag3))
+		print("                                                 %02x %02x %02x %02x %02x" %(ei_class, ei_data, ei_version, ei_osabi, ei_abiversion))
+		print("Class (0x4):                                     0x%02x\t%s" %(ei_class, e_class))
+		print("Data (0x5):                                      0x%02x\t%s" %(ei_data, e_data))
+		print("Version (0x6, same as 0x14):                     0x%02x\t%s" %(ei_version, e_version))
+		print("ABI of target system (0x7):                      0x%02x\t%s" %(ei_osabi, e_osabi))
+		print("ABI Version (0x8), undefined for Linux:          0x%02x\t%s" %(ei_version, e_version))
+		print("Padding (0x9):                                   00 00 00 00 00 00 00 (7 bytes)")
+		print("Type (0x10):                                     0x%02x\t%s" %(ei_type, e_type))
+		print("Machine (0x12):                                  0x%02x\t%s" %(ei_machine, e_machine))
+		print("Version (0x14, same as 0x6):                     0x%x\t%s" %(ei_version, e_version))
+		print("Entry point address (0x18):                      0x%x" %(e_entry));
+		print("Program headers offset (0x1c/0x20):              0x%x\t%d (bytes into file)" % (e_phoff, e_phoff))
+		print("Section headers offset (0x20/0x28):              0x%x\t%d (bytes into file)" % (e_shoff, e_shoff))
+		print("Flags (0x24/0x30):                               0x%01x" % e_flags)
+		print("Size of this header (0x28/0x34):                 0x%x\t%d (bytes)" % (e_ehsize, e_ehsize))
+		print("Size of program header (0x2a/0x36):              0x%x\t%d (bytes)" % (e_phentsize, e_phentsize))
+		print("Number of program headers (0x2c/0x38):           0x%x\t%d" % (e_shnum, e_shnum))
+		print("Size of section headers (0x2e/0x3a):             0x%x\t%d (bytes)" % (e_shentsize, e_shentsize))
+		print("Number of section headers (0x30/0x3c):           0x%x\t%d" % (e_shnum, e_shnum))
+		print("Index of section header table names (0x32/0x3e): 0x%x\t%d" % (e_shstrndx, e_shstrndx))
 
 	elf.seek(e_shoff + e_shentsize * e_shstrndx)
 	if ei_class == 1: # 32-bit
@@ -528,7 +527,7 @@ def readelf(elf, args):
 			lastnull = i + 1
 	if print_ph:
 		print("")
-		print("Program Headers: ==========")
+		print("Program Headers: =====================")
 		print("%10s  0x%08s  0x%14s  0x%14s  0x%10s  0x%10s  %05s" %("Type", "Offset", "VirtAddr", "PhysAddr", "FileSiz", "MemSiz", "Flags"))
 
 	
@@ -560,7 +559,7 @@ def readelf(elf, args):
 		interp = elf.read(p_filesz)
 		if print_interp:
 			print("")
-			print("Interp (the dynamic loader): ==========")
+			print("Interp (the dynamic loader): =====================")
 			print(interp)
 
 	e_shsymndx = -1
@@ -571,7 +570,7 @@ def readelf(elf, args):
 
 	if print_sh:
 		print("")
-		print("Section Headers ==========")
+		print("Section Headers =====================")
 		print("[NR] %19s%15s%10s%10s%8s%8s%5s%5s%5s%6s" % ("Name", "Type", "Addr.", "Offset", "Size", "EntSize", "Flag", "Link", "Info", "Align"))
 	for i in range(0, e_shnum):
 		elf.seek(e_shoff + e_shentsize * i)
@@ -644,9 +643,9 @@ def readelf(elf, args):
 		if print_symbol_table:
 			print("")
 			if ei_class == 1: # 32-bit
-				print("Symbol Table '.dynsym' contains %d entries: ==========" % (sh_size / 16))
+				print("Symbol Table '.dynsym' contains %d entries: =====================" % (sh_size / 16))
 			else:
-				print("Symbol Table '.dynsym' contains %d entries: ==========" % (sh_size / 24))
+				print("Symbol Table '.dynsym' contains %d entries: =====================" % (sh_size / 24))
 			print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
 
 		for i in range(0, sh_size / 24):
@@ -694,9 +693,9 @@ def readelf(elf, args):
 	if print_symbol_table:
 		print("")
 		if ei_class == 1: # 32-bit
-			print("Symbol Table '.symtab' contains %d entries: ==========" % (sh_size / 16))
+			print("Symbol Table '.symtab' contains %d entries: =====================" % (sh_size / 16))
 		else:
-			print("Symbol Table '.symtab' contains %d entries: ==========" % (sh_size / 24))
+			print("Symbol Table '.symtab' contains %d entries: =====================" % (sh_size / 24))
 		print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
 
 		for i in range(0, sh_size / 24):
@@ -725,7 +724,7 @@ def readelf(elf, args):
 		dynamic_section = elf.read(sh_size)	
 		if print_dynamic_section:
 			print('')
-			print('Dynamic Section ==========')
+			print("Dynamic Section =====================")
 			print('%20s %20s %20s' %("Tag", "Type", "Name/Value"))
 		if ei_class == 1: # 32-bit
 			pass
@@ -754,7 +753,7 @@ def readelf(elf, args):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-v', '--version', action='store_true', help='version info')
-	parser.add_argument('file', metavar='file', type=str, help='path to the ELF file')
+	parser.add_argument('-r', '--reference', action='store_true', help='links to learn more about ELF')
 	parser.add_argument('-eh', '--elf-header', action='store_true', help='print ELF header')
 	parser.add_argument('-ph', '--program-header', action='store_true', help='print program headers')
 	parser.add_argument('-sh', '--section-header', action='store_true', help='print section headers')
@@ -762,11 +761,18 @@ if __name__ == '__main__':
 	parser.add_argument('-st', '--symbol-table', action='store_true', help='print symbol table')
 	parser.add_argument('-ds', '--dynamic-section', action='store_true', help='print dynamic section')
 	parser.add_argument('-a', '--all', action='store_true', help='print all (default)')
+	parser.add_argument('file', metavar='file', type=str, help='path to the ELF file')
 	
 	args = parser.parse_args()
 	
 	if args.version:
 		print("Python tool to read ELF format\nCopyright (C) detailyang and Leedehai")
+
+	if args.reference:
+		print("Reference: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format")
+		print("           https://www.linuxjournal.com/article/1060")
+	
+	if args.version or args.reference:	
 		sys.exit(0)
 
 	if args.elf_header is False and args.program_header is False \
