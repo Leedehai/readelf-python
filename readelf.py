@@ -481,13 +481,13 @@ def readelf(elf, args):
 		ei_entry = struct.unpack('I', elf.read(4))[0]
 		e_entry = ei_entry
 		e_phoff, e_shoff, e_flags, e_ehsize, e_phentsize, e_phnum, e_shentsize, e_shnum, e_shstrndx = struct.unpack('IIIHHHHHH', elf.read(24))
-	else:
+	else: # 64-bit
 		ei_entry = struct.unpack('Q', elf.read(8))[0]
 		e_entry = ei_entry
 		e_phoff, e_shoff, e_flags, e_ehsize, e_phentsize, e_phnum, e_shentsize, e_shnum, e_shstrndx = struct.unpack('QQIHHHHHH', elf.read(32))
 	if print_elf_header:
 		print("")
-		print("ELF Header (offset for 32/64-bit) =====================")
+		print("ELF Header (offset for %s) =====================" % ('32-bit' if ei_class == 1 else '64-bit'))
 		print("Identification (0x0-0x8):                        %02x %02x %02x %02x (Magic: \\x7ELF)" %(ei_mag0, ei_mag1, ei_mag2, ei_mag3))
 		print("                                                 %02x %02x %02x %02x %02x" %(ei_class, ei_data, ei_version, ei_osabi, ei_abiversion))
 		print("Class (0x4):                                     0x%02x\t%s" %(ei_class, e_class))
@@ -500,20 +500,20 @@ def readelf(elf, args):
 		print("Machine (0x12):                                  0x%02x\t%s" %(ei_machine, e_machine))
 		print("Version (0x14, same as 0x6):                     0x%x\t%s" %(ei_version, e_version))
 		print("Entry point address (0x18):                      0x%x" %(e_entry));
-		print("Program headers offset (0x1c/0x20):              0x%x\t%d (bytes into file)" % (e_phoff, e_phoff))
-		print("Section headers offset (0x20/0x28):              0x%x\t%d (bytes into file)" % (e_shoff, e_shoff))
-		print("Flags (0x24/0x30):                               0x%01x" % e_flags)
-		print("Size of this header (0x28/0x34):                 0x%x\t%d (bytes)" % (e_ehsize, e_ehsize))
-		print("Size of program header (0x2a/0x36):              0x%x\t%d (bytes)" % (e_phentsize, e_phentsize))
-		print("Number of program headers (0x2c/0x38):           0x%x\t%d" % (e_shnum, e_shnum))
-		print("Size of section headers (0x2e/0x3a):             0x%x\t%d (bytes)" % (e_shentsize, e_shentsize))
-		print("Number of section headers (0x30/0x3c):           0x%x\t%d" % (e_shnum, e_shnum))
-		print("Index of section header table names (0x32/0x3e): 0x%x\t%d" % (e_shstrndx, e_shstrndx))
+		print("Program headers offset (%s):                   0x%x\t%d (bytes into file)" % ('0x1c' if ei_class == 1 else '0x20', e_phoff, e_phoff))
+		print("Section headers offset (%s):                   0x%x\t%d (bytes into file)" % ('0x20' if ei_class == 1 else '0x28', e_shoff, e_shoff))
+		print("Flags (%s):                                    0x%01x" % ('0x24' if ei_class == 1 else '0x30', e_flags))
+		print("Size of this header (%s):                      0x%x\t%d (bytes)" % ('0x28' if ei_class == 1 else '0x34', e_ehsize, e_ehsize))
+		print("Size of program header (%s):                   0x%x\t%d (bytes)" % ('0x2a' if ei_class == 1 else '0x36', e_phentsize, e_phentsize))
+		print("Number of program headers (%s):                0x%x\t%d" % ('0x2c' if ei_class == 1 else '0x38', e_shnum, e_shnum))
+		print("Size of section headers (%s):                  0x%x\t%d (bytes)" % ('0x2e' if ei_class == 1 else '0x3a', e_shentsize, e_shentsize))
+		print("Number of section headers (%s):                0x%x\t%d" % ('0x30' if ei_class == 1 else '0x3c', e_shnum, e_shnum))
+		print("Index of section header table names (%s):      0x%x\t%d" % ('0x32' if ei_class == 1 else '0x3e', e_shstrndx, e_shstrndx))
 
 	elf.seek(e_shoff + e_shentsize * e_shstrndx)
 	if ei_class == 1: # 32-bit
 		sh_name, sh_type, sh_flags, sh_addr, sh_offset, sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIIHHIIIII', elf.read(48))
-	else:
+	else: # 64-bit
 		sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 	elf.seek(sh_offset)
@@ -553,7 +553,7 @@ def readelf(elf, args):
 		elf.seek(e_phoff + e_phentsize * e_shinterpndx)
 		if ei_class == 1: # 32-bit
 			p_type, p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, p_flags, p_align = strcut.unpack('IIIIIIII', elf.read(32))
-		else:
+		else: # 64-bit
 			p_type, p_flags, p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, p_align = struct.unpack('IIQQQQQQ', elf.read(56))
 		elf.seek(p_offset)
 		interp = elf.read(p_filesz)
@@ -577,7 +577,7 @@ def readelf(elf, args):
 
 		if ei_class == 1: # 32-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset, sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIIHHIIIII', elf.read(48))
-		else:
+		else: # 64-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 		f = ""
@@ -618,7 +618,7 @@ def readelf(elf, args):
 		elf.seek(e_shoff + e_shentsize * e_shdynstr)
 		if ei_class == 1: # 32-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset, sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIIHHIIIII', elf.read(48))
-		else:
+		else: # 64-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 		elf.seek(sh_offset)
@@ -634,7 +634,7 @@ def readelf(elf, args):
 
 		if ei_class == 1: # 32-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset, sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIIHHIIIII', elf.read(48))
-		else:
+		else: # 64-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 		elf.seek(sh_offset)
@@ -644,14 +644,14 @@ def readelf(elf, args):
 			print("")
 			if ei_class == 1: # 32-bit
 				print("Symbol Table '.dynsym' contains %d entries: =====================" % (sh_size / 16))
-			else:
+			else: # 64-bit
 				print("Symbol Table '.dynsym' contains %d entries: =====================" % (sh_size / 24))
 			print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
 
 		for i in range(0, sh_size / 24):
 			if ei_class == 1: # 32-bit
 				st_name, st_info, st_other, st_shndx, st_value, st_size = struct.unpack('IIIBBH', dynsym_section[i*16:(i+1)*16])
-			else:
+			else: # 64-bit
 				st_name, st_info, st_other, st_shndx, st_value, st_size = struct.unpack('IBBHQQ', dynsym_section[i*24:(i+1)*24])
 
 			if st_name in dynsymbol_table:
@@ -668,7 +668,7 @@ def readelf(elf, args):
 		elf.seek(e_shoff + e_shentsize * e_shstrndx)
 		if ei_class == 1: # 32-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset, sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIIHHIIIII', elf.read(48))
-		else:
+		else: # 64-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 		elf.seek(sh_offset)
@@ -684,7 +684,7 @@ def readelf(elf, args):
 
 		if ei_class == 1: # 32-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset, sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIIHHIIIII', elf.read(48))
-		else:
+		else: # 64-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 		elf.seek(sh_offset)
@@ -694,7 +694,7 @@ def readelf(elf, args):
 		print("")
 		if ei_class == 1: # 32-bit
 			print("Symbol Table '.symtab' contains %d entries: =====================" % (sh_size / 16))
-		else:
+		else: # 64-bit
 			print("Symbol Table '.symtab' contains %d entries: =====================" % (sh_size / 24))
 		print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
 
@@ -717,7 +717,7 @@ def readelf(elf, args):
 		elf.seek(e_shoff + e_shentsize * e_shdynamic)
 		if ei_class == 1: # 32-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset, sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIIHHIIIII', elf.read(48))
-		else:
+		else: # 64-bit
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 		elf.seek(sh_offset)
@@ -728,7 +728,7 @@ def readelf(elf, args):
 			print('%20s %20s %20s' %("Tag", "Type", "Name/Value"))
 		if ei_class == 1: # 32-bit
 			pass
-		else:
+		else: # 64-bit
 			for i in range(0, sh_size/16):
 				elf.seek(sh_offset + i * 16)		
 				d_tag, d_un = struct.unpack('QQ', elf.read(16))
