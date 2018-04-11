@@ -6,8 +6,6 @@ Python tool to read ELF format, more hackable than GNU's readelf.
 
 Originated from my pull request to @detailyang's [readelf](https://github.com/detailyang/readelf).
 
-I may make further customizations to this file so I figured I might as well create (instead of fork) the repo. My forked repo is [here](https://github.com/Leedehai/readelf).
-
 Options:
 ```
 usage: readelf.py [-h] [-v] [-eh] [-ph] [-sh] [-it] [-st] [-ds] [-a] file
