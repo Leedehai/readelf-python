@@ -29,4 +29,8 @@ optional arguments:
   -a, --all             print all (default)
 ```
 
+More on ELF:
+- [Wikipedia article](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format") (this link is less likely to be unavailable)
+- [Stanford CS140](http://www.scs.stanford.edu/18wi-cs140/sched/readings/elf.pdf)
+- [Linux Journal](https://www.linuxjournal.com/article/1060)
 ###### EOF
