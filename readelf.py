@@ -148,7 +148,7 @@ STT_TYPE = {
 
 STB_BIND = {
 	0: 'LOCAL',
-	1: 'GLOBAL',
+    1: 'GLOBAL',
 	2: 'WEAK',
 	13: 'LOPROC',
 	15: 'HIPROC'
@@ -752,8 +752,7 @@ def readelf(elf, args):
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-v', '--version', action='store_true', help='version info')
-	parser.add_argument('-r', '--reference', action='store_true', help='links to learn more about ELF')
+	parser.add_argument('-v', '--version', action='version', version="Interpret an ELF file, version 0.2. Copyright (C) detailyang and Leedehai", help='print version info and exit')
 	parser.add_argument('-eh', '--elf-header', action='store_true', help='print ELF header')
 	parser.add_argument('-ph', '--program-header', action='store_true', help='print program headers')
 	parser.add_argument('-sh', '--section-header', action='store_true', help='print section headers')
@@ -761,19 +760,9 @@ if __name__ == '__main__':
 	parser.add_argument('-st', '--symbol-table', action='store_true', help='print symbol table')
 	parser.add_argument('-ds', '--dynamic-section', action='store_true', help='print dynamic section')
 	parser.add_argument('-a', '--all', action='store_true', help='print all (default)')
-	parser.add_argument('file', metavar='file', type=str, help='path to the ELF file')
+	parser.add_argument('file', type=str, help='path to the ELF file')
 	
 	args = parser.parse_args()
-	
-	if args.version:
-		print("Python tool to read ELF format\nCopyright (C) detailyang and Leedehai")
-
-	if args.reference:
-		print("Reference: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format")
-		print("           https://www.linuxjournal.com/article/1060")
-	
-	if args.version or args.reference:	
-		sys.exit(0)
 
 	if args.elf_header is False and args.program_header is False \
 		and args.section_header is False and args.interp is False \
