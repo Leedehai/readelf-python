@@ -441,7 +441,7 @@ def readelf(elf, args):
 		e_class = '32-bit objects'
 	elif ei_class == 2:
 		e_class = '64-bit objects'
-	
+
 	if ei_data == 0:
 		print_err('Invalid data encoding')
 	elif ei_data == 1:
@@ -530,7 +530,7 @@ def readelf(elf, args):
 		print("Program Headers: =====================")
 		print("%10s  0x%08s  0x%14s  0x%14s  0x%10s  0x%10s  %05s" %("Type", "Offset", "VirtAddr", "PhysAddr", "FileSiz", "MemSiz", "Flags"))
 
-	
+
 	e_shinterpndx = -1
 	for i in range(0, e_phnum):
 		elf.seek(e_phoff + e_phentsize * i)
@@ -545,7 +545,7 @@ def readelf(elf, args):
 		#INTERP
 		if p_type == 3:
 			e_shinterpndx = i
-			
+
 		if print_ph:
 			print("%10s  0x%08x  0x%014x  0x%014x  0x%010x  0x%010x  %05s" %(PT_TYPE[p_type] if p_type in PT_TYPE else p_type,p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, PT_FLAGS[p_flags]))
 
@@ -605,15 +605,15 @@ def readelf(elf, args):
 
 			if string_table[sh_name] == '.dynstr':
 				e_shdynstr = i
-			
+
 			if string_table[sh_name] == '.dynamic':
 				e_shdynamic = i
 
 		else:
 			if print_sh:
 				print("[%02d]%20s%15s%10x%10d%8d%8d%5s%5s%5s%6s" % (i, sh_name, SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
-		
-		
+
+
 	if e_shdynsym >= 0 and e_shdynstr >= 0:
 		elf.seek(e_shoff + e_shentsize * e_shdynstr)
 		if ei_class == 1: # 32-bit
@@ -721,7 +721,7 @@ def readelf(elf, args):
 			sh_name, sh_type, sh_flags, sh_addr, sh_offset,  sh_size, sh_link, sh_info, sh_addralign, sh_entsize  = struct.unpack('IIQQQQIIQQ', elf.read(64))
 
 		elf.seek(sh_offset)
-		dynamic_section = elf.read(sh_size)	
+		dynamic_section = elf.read(sh_size)
 		if print_dynamic_section:
 			print('')
 			print("Dynamic Section =====================")
@@ -730,7 +730,7 @@ def readelf(elf, args):
 			pass
 		else: # 64-bit
 			for i in range(0, sh_size/16):
-				elf.seek(sh_offset + i * 16)		
+				elf.seek(sh_offset + i * 16)
 				d_tag, d_un = struct.unpack('QQ', elf.read(16))
 				if d_tag in TAG:
 					if d_tag == 1 or d_tag == 15:
@@ -746,12 +746,12 @@ def readelf(elf, args):
 					else:
 						if print_dynamic_section:
 							print('0x%018x %20s %20s' %(d_tag, d_tag, d_un))
-		
+
 	return
 
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
+	parser = argparse.ArgumentParser(description = 'Interpret an ELF file')
 	parser.add_argument('-v', '--version', action='version', version="Interpret an ELF file, version 0.2. Copyright (C) detailyang and Leedehai", help='print version info and exit')
 	parser.add_argument('-eh', '--elf-header', action='store_true', help='print ELF header')
 	parser.add_argument('-ph', '--program-header', action='store_true', help='print program headers')
@@ -761,7 +761,7 @@ if __name__ == '__main__':
 	parser.add_argument('-ds', '--dynamic-section', action='store_true', help='print dynamic section')
 	parser.add_argument('-a', '--all', action='store_true', help='print all (default)')
 	parser.add_argument('file', type=str, help='path to the ELF file')
-	
+
 	args = parser.parse_args()
 
 	if args.elf_header is False and args.program_header is False \
