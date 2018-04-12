@@ -13,75 +13,37 @@ def print_err(err):
 SHF_WRITE = 0x1
 SHF_ALLOC = 0x2
 SHF_EXECINSTR = 0x4
-SHF_MASKPROC = 0xF0000000
+SHF_MASKPROC = 0xf0000000
 
 
-TAG = {
-	0:"NULL",
-	1:"NEEDED",
-	2:"PLTRELSZ",
-	3:"PLTGOT",
-	4:"HASH",
-	5:"STRTAB",
-	6:"SYMTAB",
-	7:"RELA",
-	8:"RELASZ",
-	9:"RELAENT",
-	10:"STRSZ",
-	11:"SYMENT",
-	12:"INIT",
-	13:"FINI",
-	14:"SONAME",
-	15:"RPATH",
-	16:"SYMBOLIC",
-	17:"REL",
-	18:"RELSZ",
-	19:"RELENT",
-	20:"PLTREL",
-	21:"DEBUG",
-	22:"TEXTREL",
-	23:"JMPREL",
-	24:"BIND_NOW",
-	25:"INIT_ARRAY",
-	26:"FINI_ARRAY",
-	27:"INIT_ARRAYSZ",
-	28:"FINI_ARRAYSZ",
-	29:"RUNPATH",
-	30:"FLAGS",
-	32:"ENCODING",
-	32:"PREINIT_ARRAY",
-	33:"PREINIT_ARRAYSZ",
-	34:"MAXPOSTAGS",
-	0x6000000d:"LOOS",
-	0x6000000d:"SUNW_AUXILIARY",
-	0x6000000e:"SUNW_RTLDINF",
-	0x6000000e:"SUNW_FILTER",
-	0x60000010:"SUNW_CAP",
-	0x60000011:"SUNW_SYMTAB",
-	0x60000012:"SUNW_SYMSZ",
-	0x60000013:"SUNW_ENCODING",
-	0x60000013:"SUNW_SORTENT",
-	0x60000014:"SUNW_SYMSORT",
-	0x60000015:"SUNW_SYMSORTSZ",
-	0x60000016:"SUNW_TLSSORT",
-	0x60000017:"SUNW_TLSSORTSZ",
-	0x60000018:"SUNW_CAPINFO",
-	0x60000019:"SUNW_STRPAD",
-	0x6000001a:"SUNW_CAPCHAIN",
-	0x6000001b:"SUNW_LDMACH",
-	0x6000001d:"SUNW_CAPCHAINENT",
-	0x6000001f:"SUNW_CAPCHAINSZ",
-	0x6ffff000:"HIOS",
+DYN_TAG = {
+	0:"NULL",			1:"NEEDED",			2:"PLTRELSZ",		3:"PLTGOT",			4:"HASH",
+	5:"STRTAB",			6:"SYMTAB",			7:"RELA",			8:"RELASZ",			9:"RELAENT",
+	10:"STRSZ",			11:"SYMENT",		12:"INIT",			13:"FINI",			14:"SONAME",
+	15:"RPATH",			16:"SYMBOLIC",		17:"REL",			18:"RELSZ",			19:"RELENT",
+	20:"PLTREL",		21:"DEBUG",			22:"TEXTREL",		23:"JMPREL",		24:"BIND_NOW",
+	25:"INIT_ARRAY",	26:"FINI_ARRAY",	27:"INIT_ARRAYSZ",	28:"FINI_ARRAYSZ",	29:"RUNPATH",
+	30:"FLAGS",			32:"PREINIT_ARRAY",	33:"PREINIT_ARRAYSZ", # no 31		
+	0x6000000d:"LOOS",	0x6ffff000:"HIOS",	0x70000000:"LOPROC",0x7fffffff:"HIPROC",
+
+	# unspecified in standard
 	0x6ffffd00:"VALRNGLO",
+	0x6ffffdf5:"GNU_PRELINKED",
+	0x6ffffdf6:"GNU_CONFLICTSZ",
+	0x6ffffdf7:"GNU_LIBLISTSZ",
 	0x6ffffdf8:"CHECKSUM",
 	0x6ffffdf9:"PLTPADSZ",
 	0x6ffffdfa:"MOVEENT",
 	0x6ffffdfb:"MOVESZ",
+	0x6ffffdfc:"FEATURE",
 	0x6ffffdfd:"POSFLAG_1",
 	0x6ffffdfe:"SYMINSZ",
 	0x6ffffdff:"SYMINENT",
 	0x6ffffdff:"VALRNGHI",
 	0x6ffffe00:"ADDRRNGLO",
+	0x6ffffef5:"GNU_HASH",
+	0x6ffffef8:"GNU_CONFLICT",
+	0x6ffffef9:"GNU_LIBLIST",
 	0x6ffffefa:"CONFIG",
 	0x6ffffefb:"DEPAUDIT",
 	0x6ffffefc:"AUDIT",
@@ -89,6 +51,8 @@ TAG = {
 	0x6ffffefe:"MOVETAB",
 	0x6ffffeff:"SYMINFO",
 	0x6ffffeff:"ADDRRNGHI",
+	0x6ffffff0:"VERSYM",
+	0x6ffffffe:"VERNEED",
 	0x6ffffff9:"RELACOUNT",
 	0x6ffffffa:"RELCOUNT",
 	0x6ffffffb:"FLAGS_1",
@@ -96,12 +60,9 @@ TAG = {
 	0x6ffffffd:"VERDEFNUM",
 	0x6ffffffe:"VERNEED",
 	0x6fffffff:"VERNEEDNUM",
-	0x70000000:"LOPROC",
-	0x70000001:"SPARC_REGISTER",
 	0x7ffffffd:"AUXILIARY",
 	0x7ffffffe:"USED",
-	0x7fffffff:"FILTER",
-	0x7fffffff:"HIPROC",
+	0x7fffffff:"FILTER"
 }
 
 
@@ -110,12 +71,16 @@ PT_FLAGS = { 0: "None", 1: "E", 2: "W", 3: "WE", 4: "R", 5: "RE", 6: "RW", 7: "R
 
 PT_TYPE = {
 	0: "NULL", 1: "LOAD", 2: "DYNAMIC", 3: "INTERP", 4: "NOTE", 5: "SHLIB",
-	6: "PHDR", 7: "TLS",  0x70000000: "LOPROC",      0x7fffffff: "HPROC"
+	6: "PHDR", 7: "TLS",  0x70000000: "LOPROC",      0x7fffffff: "HPROC",
+	# unspecified in standard
+	0x6474e550: "GNU_EH_FRAME", 0x6474e551: "GNU_STACK", 0x6474e552: "GNU_RELRO"
 }
 
 
 STT_TYPE = {
 	0: "NOTYPE", 1: "OBJECT", 2: "FUNC", 3: "SECTION", 4: "FILE", 5: "COMMON", 6: "TLS",
+
+	# unspecified in standard
 	10: "LOOS",  12: "HIOS",  13: "LOPROC",  15: "HIPROC"
 }
 
@@ -127,31 +92,25 @@ STV_VISIBILITY = { 0: "Default", 1: "Internal", 2: "Hidden", 3: "Protected" }
 
 
 SH_TYPE = {
-	0:"NULL",
-	1:"PROGBITS",
-	2:"SYMTAB",
-	3:"STRTAB",
-	4:"RELA",
-	5:"HASH",
-	6:"DYNAMIC",
-	7:"NOTE",
-	8:"NOBITS",
-	9:"REL",
-	10:"SHLIB",
-	11:"DYNSYM",
-	14:"INIT_ARRAY",
-	15:"FINI_ARRAY",
-	16:"PREINIT_ARRAY",
-	17:"GROUP",
-	18:"SYMTAB_SHNDX",
-	0x60000000:"LOOS",
-	0x6fffffff:"HIOS",
-	0x70000000:"LOPROC",
-	0x7fffffff:"HIPROC",
-	0x80000000:"LOUSER",
-	0xffffffff:"HIUSER",
+	0:"NULL",		1:"PROGBITS",		2:"SYMTAB",		3:"STRTAB",		4:"RELA",
+	5:"HASH",		6:"DYNAMIC",		7:"NOTE",		8:"NOBITS",		9:"REL",
+	10:"SHLIB",		11:"DYNSYM",		14:"INIT_ARRAY",15:"FINI_ARRAY",16:"PREINIT_ARRAY",
+	17:"GROUP",		18:"SYMTAB_SHNDX",
+	0x70000000:"LOPROC",				0x7fffffff:"HIPROC",
+	0x80000000:"LOUSER",				0xffffffff:"HIUSER",
+
+	# unspecifiedin standard
+	
+		
+	0x60000000:"LOOS",	
+	0x6ffffff5:"GNU_ATTRIBUTES",	0x6ffffff6:"GNU_HASH",	0x6ffffff7:"GNU_LIBLIST",
+	0x6ffffffd:"VERDEF",			0x6ffffffe:"VERNEED",	0x6fffffff:"VERSYM",
 }
 
+SHN_IDX = { # special section header index (0 or absent in section header)
+	0:"UNDEF",		0xff00:"LOPROC",	0xff1f:"HIPROC",	0xff20:"LOOS",	0xff3f:"HIOS",
+	0xfff1:"ABS",	0xfff2:"COMMON",	0xffff:"XINDEX"
+}
 # symbol table, dynamic linker symbol table, relocation table with addens, relocation table without addens
 SH_TYPE_HIGHLIGHT = ["SYMTAB", "DYNSYM", "RELA", "REL"]
 # instructions, global data, read-only global data, uninitialized global data
@@ -169,41 +128,12 @@ EI_MACHINE = {
 	8:"MIPS I Architecture",
 	9:"IBM System/370 Processor",
 	10:"MIPS RS3000 Little-endian",
-	11-14:"Reserved for future use",
-	15:"Hewlett-Packard PA-RISC",
-	16:"Reserved for future use",
-	17:"Fujitsu VPP500",
-	18:"Enhanced instruction set SPARC",
-	19:"Intel 80960",
-	20:"PowerPC",
-	21:"64-bit PowerPC",
-	22:"IBM System/390 Processor",
-	23:"IBM SPU/SPC",
 	24-35:"Reserved for future use",
-	36:"NEC V800",
-	37:"Fujitsu FR20",
-	38:"TRW RH-32",
-	39:"Motorola RCE",
 	40:"ARM 32-bit architecture (AARCH32)",
-	41:"Digital Alpha",
-	42:"Hitachi SH",
-	43:"SPARC Version 9",
-	44:"Siemens TriCore embedded processor",
-	45:"Argonaut RISC Core, Argonaut Technologies Inc.",
-	46:"Hitachi H8/300",
-	47:"Hitachi H8/300H",
-	48:"Hitachi H8S",
-	49:"Hitachi H8/500",
 	50:"Intel IA-64 processor architecture",
 	51:"Stanford MIPS-X",
 	52:"Motorola ColdFire",
 	53:"Motorola M68HC12",
-	54:"Fujitsu MMA Multimedia Accelerator",
-	55:"Siemens PCP",
-	56:"Sony nCPU embedded RISC processor",
-	57:"Denso NDR1 microprocessor",
-	58:"Motorola Star*Core processor",
-	59:"Toyota ME16 processor",
 	60:"STMicroelectronics ST100 processor",
 	61:"Advanced Logic Corp. TinyJ embedded processor family",
 	62:"AMD x86-64 architecture",
@@ -213,66 +143,13 @@ EI_MACHINE = {
 	66:"Siemens FX66 microcontroller",
 	67:"STMicroelectronics ST9+ 8/16 bit microcontroller",
 	68:"STMicroelectronics ST7 8-bit microcontroller",
-	69:"Motorola MC68HC16 Microcontroller",
-	70:"Motorola MC68HC11 Microcontroller",
-	71:"Motorola MC68HC08 Microcontroller",
-	72:"Motorola MC68HC05 Microcontroller",
 	73:"Silicon Graphics SVx",
-	74:"STMicroelectronics ST19 8-bit microcontroller",
-	75:"Digital VAX",
-	76:"Axis Communications 32-bit embedded processor",
-	77:"Infineon Technologies 32-bit embedded processor",
-	78:"Element 14 64-bit DSP Processor",
-	79:"LSI Logic 16-bit DSP Processor",
 	80:"Donald Knuth's educational 64-bit processor",
 	81:"Harvard University machine-independent object files",
-	82:"SiTera Prism",
-	83:"Atmel AVR 8-bit microcontroller",
-	84:"Fujitsu FR30",
-	85:"Mitsubishi D10V",
-	86:"Mitsubishi D30V",
-	87:"NEC v850",
-	88:"Mitsubishi M32R",
-	89:"Matsushita MN10300",
-	90:"Matsushita MN10200",
-	91:"picoJava",
 	92:"OpenRISC 32-bit embedded processor",
-	93:"ARC International ARCompact processor (old spelling/synonym: EM_ARC_A5)",
-	94:"Tensilica Xtensa Architecture",
-	95:"Alphamosaic VideoCore processor",
-	96:"Thompson Multimedia General Purpose Processor",
-	97:"National Semiconductor 32000 series",
-	98:"Tenor Network TPC processor",
-	99:"Trebia SNP 1000 processor",
-	100:"STMicroelectronics (www.st.com) ST200 microcontroller",
-	101:"Ubicom IP2xxx microcontroller family",
-	102:"MAX Processor",
-	103:"National Semiconductor CompactRISC microprocessor",
-	104:"Fujitsu F2MC16",
-	105:"Texas Instruments embedded microcontroller msp430",
-	106:"Analog Devices Blackfin (DSP) processor",
-	107:"S1C33 Family of Seiko Epson processors",
-	108:"Sharp embedded microprocessor",
-	109:"Arca RISC Microprocessor",
+	100:"STMicroelectronics ST200 microcontroller",
 	110:"Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University",
-	111:"eXcess: 16/32/64-bit configurable embedded CPU",
-	112:"Icera Semiconductor Inc. Deep Execution Processor",
-	113:"Altera Nios II soft-core processor",
-	114:"National Semiconductor CompactRISC CRX microprocessor",
-	115:"Motorola XGATE embedded processor",
-	116:"Infineon C16x/XC16x processor",
-	117:"Renesas M16C series microprocessors",
-	118:"Microchip Technology dsPIC30F Digital Signal Controller",
-	119:"Freescale Communication Engine RISC core",
-	120:"Renesas M32C series microprocessors",
 	121-130:"Reserved for future use",
-	131:"Altium TSK3000 core",
-	132:"Freescale RS08 embedded processor",
-	133:"Analog Devices SHARC family of 32-bit DSP processors",
-	134:"Cyan Technology eCOG2 microprocessor",
-	135:"Sunplus S+core7 RISC processor",
-	136:"New Japan Radio (NJR) 24-bit DSP Processor",
-	137:"Broadcom VideoCore III processor",
 	138:"RISC processor for Lattice FPGA architecture",
 	139:"Seiko Epson C17 family",
 	140:"The Texas Instruments TMS320C6000 DSP family",
@@ -281,75 +158,15 @@ EI_MACHINE = {
 	143:"Texas Instruments Application Specific RISC Processor, 32bit fetch",
 	144:"Texas Instruments Programmable Realtime Unit",
 	145-159:"Reserved for future use",
-	160:"",
-	145-159:"Reserved for future use",
-	160:"STMicroelectronics 64bit VLIW Data Signal Processor",
-	161:"Cypress M8C microprocessor",
-	162:"Renesas R32C series microprocessors",
-	163:"NXP Semiconductors TriMedia architecture family",
-	164:"QUALCOMM DSP6 Processor",
-	165:"Intel 8051 and variants",
-	166:"STMicroelectronics STxP7x family of configurable and extensible RISC processors",
-	167:"Andes Technology compact code size embedded RISC processor family",
-	168:"Cyan Technology eCOG1X family",
-	168:"Cyan Technology eCOG1X family",
-	169:"Dallas Semiconductor MAXQ30 Core Micro-controllers",
-	170:"New Japan Radio (NJR) 16-bit DSP Processor",
-	171:"M2000 Reconfigurable RISC Microprocessor",
-	172:"Cray Inc. NV2 vector architecture",
-	173:"Renesas RX family",
-	174:"Imagination Technologies META processor architecture",
-	175:"MCST Elbrus general purpose hardware architecture",
-	176:"Cyan Technology eCOG16 family",
-	177:"National Semiconductor CompactRISC CR16 16-bit microprocessor",
-	178:"Freescale Extended Time Processing Unit",
-	179:"Infineon Technologies SLE9X core",
-	180:"Intel L10M",
-	181:"Intel K10M",
-	182:"Reserved for future Intel use",
-	183:"ARM 64-bit architecture (AARCH64)",
-	184:"Reserved for future ARM use",
-	185:"Atmel Corporation 32-bit microprocessor family",
-	186:"STMicroeletronics STM8 8-bit microcontroller",
-	187:"Tilera TILE64 multicore architecture family",
-	188:"Tilera TILEPro multicore architecture family",
 	189:"Xilinx MicroBlaze 32-bit RISC soft processor core",
 	190:"NVIDIA CUDA architecture",
-	191:"Tilera TILE-Gx multicore architecture family",
-	192:"CloudShield architecture family",
-	193:"KIPO-KAIST Core-A 1st generation processor family",
-	194:"KIPO-KAIST Core-A 2nd generation processor family",
-	195:"Synopsys ARCompact V2",
-	196:"Open8 8-bit RISC soft processor core",
-	197:"Renesas RL78 family",
-	198:"Broadcom VideoCore V processor",
-	199:"Renesas 78KOR family",
-	200:"Freescale 56800EX Digital Signal Controller (DSC)",
-	201:"Beyond BA1 CPU architecture",
-	202:"Beyond BA2 CPU architecture",
-	203:"XMOS xCORE processor family",
-	204:"Microchip 8-bit PIC(r) family",
 	205:"Reserved by Intel",
 	206:"Reserved by Intel",
 	207:"Reserved by Intel",
 	208:"Reserved by Intel",
 	209:"Reserved by Intel",
-	210:"KM211 KM32 32-bit processor",
-	211:"KM211 KMX32 32-bit processor",
-	212:"KM211 KMX16 16-bit processor",
-	213:"KM211 KMX8 8-bit processor",
-	214:"KM211 KVARC processor",
-	215:"Paneve CDP architecture family",
-	216:"Cognitive Smart Memory Processor",
-	217:"Bluechip Systems CoolEngine",
-	218:"Nanoradio Optimized RISC",
-	219:"CSR Kalimba architecture family",
-	220:"Zilog Z80",
-	221:"Controls and Data Services VISIUMcore processor",
-	222:"FTDI Chip FT32 high performance 32-bit RISC architecture",
-	223:"Moxie processor family",
 	224:"AMD GPU architecture",
-	243:"RISC-V",
+	243:"RISC-V"
 }
 
 
@@ -370,28 +187,8 @@ def ELF_ST_VISIBILITY(i):
 
 
 def readelf(elf, args):
-	'''
-	#define EI_NIDENT 16
-	typedef struct{
-	unsigned char e_ident[EI_NIDENT];
-	Elf32_Half e_type;
-	Elf32_Half e_machine;
-	Elf32_Word e_abiversion;
-	Elf32_Addr e_entry;
-	Elf32_Off e_phoff;
-	Elf32_Off e_shoff;
-	Elf32_Word e_flags;
-	Elf32_Half e_ehsize;
-	Elf32_Half e_phentsize;
-	Elf32_Half e_phnum;
-	Elf32_Half e_shentsize;
-	Elf32_Half e_shnum;
-	Elf32_Half e_shstrndx;
-	}Elf32_Ehdr;
-	'''
-
 	print_elf_header, print_ph, print_sh = args.elf_header, args.program_header, args.section_header
-	print_interp, print_symbol_table, print_dynamic_section = args.interp, args.symbol_table, args.dynamic_section
+	print_interp, print_symbol_table, print_dynamic_section, print_relocation_table = args.interp, args.symbol_table, args.dynamic_section, args.relocation_table
 
 	e_type = e_class = 'dummpy'
 
@@ -495,7 +292,7 @@ def readelf(elf, args):
 	if print_ph:
 		print("")
 		print("\x1b[1;38;5;201mProgram Headers: =====================\x1b[0m")
-		print("%10s %8s  %15s  %15s  %10s  %10s %05s" %("Type", "0x Offset", "0x VirtAddr", "0x PhysAddr", "0x FileSiz", "0x MemSiz", "Flags"))
+		print("%12s %8s  %15s  %15s  %10s  %10s %05s" %("Type", "0x Offset", "0x VirtAddr", "0x PhysAddr", "0x FileSiz", "0x MemSiz", "Flags"))
 
 
 	e_shinterpndx = -1
@@ -514,7 +311,7 @@ def readelf(elf, args):
 			e_shinterpndx = i
 
 		if print_ph:
-			print("%10s  %8x  %15x  %15x  %10x  %10x %05s" %(PT_TYPE[p_type] if p_type in PT_TYPE else p_type,p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, PT_FLAGS[p_flags]))
+			print("%12s  %8x  %15x  %15x  %10x  %10x %05s" %(PT_TYPE[p_type] if p_type in PT_TYPE else p_type,p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, PT_FLAGS[p_flags]))
 
 	if e_shinterpndx >= 0:
 		elf.seek(e_phoff + e_phentsize * e_shinterpndx)
@@ -538,7 +335,7 @@ def readelf(elf, args):
 	if print_sh:
 		print("")
 		print("\x1b[1;38;5;201mSection Headers =====================\x1b[0m")
-		print("Nr  %19s%12s%15s%7s%7s%8s%5s%5s%5s%6s" % ("Name", "Type", "0x Address", "Offset", "Size", "EntSize", "Flag", "Link", "Info", "Align"))
+		print(" Nr %19s%12s%15s%7s%7s%8s%5s%5s%5s%6s" % ("Name", "Type", "0x Address", "Offset", "Size", "EntSize", "Flag", "Link", "Info", "Align"))
 	for i in range(0, e_shnum):
 		elf.seek(e_shoff + e_shentsize * i)
 
@@ -560,11 +357,12 @@ def readelf(elf, args):
 		if sh_name in string_table:
 			if print_sh:
 				if sh_type in SH_TYPE and (SH_TYPE[sh_type] in SH_TYPE_HIGHLIGHT):
-					print("\x1b[38;5;198m%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s\x1b[0m" % (i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+					color = "\x1b[38;5;198m"
 				elif sh_type in SH_TYPE and (string_table[sh_name].lower() in SH_NAME_HIGHLIGHT):
-					print("\x1b[38;5;215m%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s\x1b[0m" % (i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+					color = "\x1b[38;5;215m"
 				else:
-					print("%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s" % (i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+					color = "\x1b[0m"
+				print("%s%3d %19s%12s%15x%7d%7d%8d%5s%5s%5s%6s\x1b[0m" % (color, i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
 
 			if string_table[sh_name] == '.symtab':
 				e_shsymndx = i
@@ -583,7 +381,7 @@ def readelf(elf, args):
 
 		else:
 			if print_sh:
-				print("%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s" % (i, sh_name, SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+				print("%3d %19s%12s%15x%7d%7d%8d%5s%5s%5s%6s" % (i, sh_name, SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
 
 
 	if e_shdynsym >= 0 and e_shdynstr >= 0:
@@ -618,7 +416,8 @@ def readelf(elf, args):
 				print("\x1b[1;38;5;201mSymbol Table '.dynsym' contains %d entries: =====================\x1b[0m" % (sh_size / 16))
 			else: # 64-bit
 				print("\x1b[1;38;5;201mSymbol Table '.dynsym' contains %d entries: =====================\x1b[0m" % (sh_size / 24))
-			print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
+			print("note: value = virtual addr. for executable & shared objects, offset for relocatable files")
+			print("%04s%10s%7s%10s%10s%10s%10s%30s" %("Num", "0x Value", "Size", "Type", "Bind", "Vis", "SH_Idx", "Name"))
 
 		for i in range(0, sh_size / 24):
 			if ei_class == 1: # 32-bit
@@ -629,15 +428,15 @@ def readelf(elf, args):
 			if st_name in dynsymbol_table:
 				if print_symbol_table:
 					if STT_TYPE[ELF_ST_TYPE(st_info)] == "FUNC" and dynsymbol_table[st_name][0:2] == "main":
-						print("\x1b[38;5;198m%4d%10d%10d%10s%10s%10s%10d%30s\x1b[0m" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, dynsymbol_table[st_name],))
+						color = "\x1b[38;5;198m"
 					else:
-						print("%4d%10d%10d%10s%10s%10s%10d%30s" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, dynsymbol_table[st_name],))
+						color = "\x1b[0m"
+						print("%s%4d%10x%7d%10s%10s%10s%10s%30s\x1b[0m" %(color, i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+								STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], SHN_IDX[st_shndx] if st_shndx in SHN_IDX else str(st_shndx), dynsymbol_table[st_name],))
 			else:
 				if print_symbol_table:
-					print("%4d%10d%10d%10s%10s%10s%10d%30d" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-						STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, st_name,))
+						print("%4d%10x%7d%10s%10s%10s%10s%30d" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], SHN_IDX[st_shndx] if st_shndx in SHN_IDX else str(st_shndx), st_name,))
 
 
 	if e_shsymndx >= 0 and e_shstrndx >= 0:
@@ -672,7 +471,8 @@ def readelf(elf, args):
 			print("\x1b[1;38;5;201mSymbol Table '.symtab' contains %d entries: =====================\x1b[0m" % (sh_size / 16))
 		else: # 64-bit
 			print("\x1b[1;38;5;201mSymbol Table '.symtab' contains %d entries: =====================\x1b[0m" % (sh_size / 24))
-		print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
+		print("note: value = virtual addr. for executable & shared objects, offset for relocatable files")
+		print("%04s%10s%7s%10s%10s%10s%10s%30s" %("Num", "0x Value", "Size", "Type", "Bind", "Vis", "SH_Idx", "Name"))
 
 		for i in range(0, sh_size / 24):
 			if ei_class == 1: # 32-bit
@@ -683,15 +483,15 @@ def readelf(elf, args):
 			if st_name in symbol_table:
 				if print_symbol_table:
 					if STT_TYPE[ELF_ST_TYPE(st_info)] == "FUNC" and symbol_table[st_name] == "main":
-						print("\x1b[38;5;198m%4d%10d%10d%10s%10s%10s%10d%30s\x1b[0m" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, symbol_table[st_name],))
+						color = "\x1b[38;5;198m"
 					else:
-						print("%4d%10d%10d%10s%10s%10s%10d%30s" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, symbol_table[st_name],))
+						color = "\x1b[0m"
+					print("%s%4d%10x%7d%10s%10s%10s%10s%30s\x1b[0m" %(color, i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+						STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], SHN_IDX[st_shndx] if st_shndx in SHN_IDX else str(st_shndx), symbol_table[st_name],))
 			else:
 				if print_symbol_table:
-					print("%4d%10d%10d%10s%10s%10s%10d%30d" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-						STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, st_name,))
+					print("%4d%10x%7d%10s%10s%10s%10s%30d" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+						STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], SHN_IDX[st_shndx] if st_shndx in SHN_IDX else str(st_shndx), st_name,))
 
 	if e_shdynamic >= 0:
 		elf.seek(e_shoff + e_shentsize * e_shdynamic)
@@ -705,40 +505,45 @@ def readelf(elf, args):
 		if print_dynamic_section:
 			print("")
 			print("\x1b[1;38;5;201mDynamic Section =====================\x1b[0m")
-			print("%20s %20s %20s" %("Tag", "Type", "Name/Value"))
+			print("%10s %17s %16s" %("0x Tag_Val", "Tag", "0x Val/Name"))
 		if ei_class == 1: # 32-bit
 			pass
 		else: # 64-bit
 			for i in range(0, sh_size/16):
 				elf.seek(sh_offset + i * 16)
 				d_tag, d_un = struct.unpack('QQ', elf.read(16))
-				if d_tag in TAG:
+				if d_tag in DYN_TAG:
 					if d_tag == 1 or d_tag == 15:
 						if print_dynamic_section:
-							print('0x%018x %20s %20s' %(d_tag, TAG[d_tag], dynsymbol_table[d_un]))
+							print('  %08x %17s %16s' %(d_tag, DYN_TAG[d_tag], dynsymbol_table[d_un]))
 					else:
 						if print_dynamic_section:
-							print('0x%018x %20s %20s' %(d_tag, TAG[d_tag], d_un))
+							print('  %08x %17s %16x' %(d_tag, DYN_TAG[d_tag], d_un))
 				else:
 					if d_tag == 1 or d_tag == 15:
 						if print_dynamic_section:
-							print('0x%018x %20s %20s' %(d_tag, d_tag, dynsymbol_table[d_un]))
+							print('  %08x %17s %16s' %(d_tag, d_tag, dynsymbol_table[d_un]))
 					else:
 						if print_dynamic_section:
-							print('0x%018x %20s %20s' %(d_tag, d_tag, d_un))
-
+							print('  %08x %17s %16x' %(d_tag, d_tag, d_un))
+	
+	if print_relocation_table:
+		print("")
+		print("\x1b[1;38;5;201mRelocation Table =====================\x1b[0m")
+		print("Not implemented")
 	return
 
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description = 'Interpret an ELF file')
-	parser.add_argument('-v', '--version', action='version', version="Interpret an ELF file, version 0.2. Copyright (C) detailyang and Leedehai", help='print version info and exit')
+	parser = argparse.ArgumentParser(description = "Interpret an ELF file, in lieu of GNU binutil's readelf")
+	parser.add_argument('-v', '--version', action='version', version="Interpret an ELF file, version 0.3. Copyright (C) detailyang and Leedehai", help='print version info and exit')
 	parser.add_argument('-eh', '--elf-header', action='store_true', help='print ELF header')
 	parser.add_argument('-ph', '--program-header', action='store_true', help='print program headers')
 	parser.add_argument('-sh', '--section-header', action='store_true', help='print section headers')
 	parser.add_argument('-it', '--interp', action='store_true', help='print interp, i.e. the dynamic loader (itself a shared binary)')
 	parser.add_argument('-st', '--symbol-table', action='store_true', help='print symbol table')
 	parser.add_argument('-ds', '--dynamic-section', action='store_true', help='print dynamic section')
+	parser.add_argument('-rl', '--relocation-table', action='store_true', help='print relocation table')
 	parser.add_argument('-a', '--all', action='store_true', help='print all (default)')
 	parser.add_argument('file', type=str, help='path to the ELF file')
 
@@ -750,7 +555,7 @@ if __name__ == '__main__':
 		args.all = True
 	if args.all:
 		args.elf_header = True; args.program_header = True; args.section_header = True
-		args.interp = True; args.symbol_table = True; args.dynamic_section = True
+		args.interp = True; args.symbol_table = True; args.dynamic_section = True; args.relocation_table = True
 
 	print("Input file: %s" % args.file)
 	try:

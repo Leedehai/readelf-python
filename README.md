@@ -31,6 +31,12 @@ optional arguments:
 
 More on ELF:
 - [Wikipedia article](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format") (this link is less likely to be unavailable)
-- [Stanford CS140](http://www.scs.stanford.edu/18wi-cs140/sched/readings/elf.pdf)
+- [ELF specification (version 1.2) from Stanford CS140](http://www.scs.stanford.edu/18wi-cs140/sched/readings/elf.pdf)
 - [Linux Journal](https://www.linuxjournal.com/article/1060)
+- [GNU's extension to ELF](https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;a=summary), you need to read the repo yourself. Particularly [this header](gnu-binutils-elfcpp.h), last updated on 2018-01-03	by Alan Modra.
+
+# readelf-color
+
+This is a simple colorizer mounted to the real (GNU's) `readelf`, like this: `readelf ... | readelf-color`
+
 ###### EOF
