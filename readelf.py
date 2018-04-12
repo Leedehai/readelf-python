@@ -120,10 +120,10 @@ STT_TYPE = {
 }
 
 
-STB_BIND = { 0: "LOCAL", 1: "GLOBAL", 2: "WEAK", 13: "LOPROC", 15: "HIPROC" }
+STB_BIND = { 0: "Local", 1: "Global", 2: "Weak", 13: "Loproc", 15: "Hiproc" }
 
 
-STV_VISIBILITY = { 0: "DEFAULT", 1: "INTERNAL", 2: "HIDDEN", 3: "PROTECTED" }
+STV_VISIBILITY = { 0: "Default", 1: "Internal", 2: "Hidden", 3: "Protected" }
 
 
 SH_TYPE = {
@@ -152,6 +152,10 @@ SH_TYPE = {
 	0xffffffff:"HIUSER",
 }
 
+# symbol table, dynamic linker symbol table, relocation table with addens, relocation table without addens
+SH_TYPE_HIGHLIGHT = ["SYMTAB", "DYNSYM", "RELA", "REL"]
+# instructions, global data, read-only global data, uninitialized global data
+SH_NAME_HIGHLIGHT = [".text", ".data", ".rodata", ".bss"]
 
 EI_MACHINE = {
 	0:"No machine",
@@ -450,7 +454,7 @@ def readelf(elf, args):
 		e_phoff, e_shoff, e_flags, e_ehsize, e_phentsize, e_phnum, e_shentsize, e_shnum, e_shstrndx = struct.unpack('QQIHHHHHH', elf.read(32))
 	if print_elf_header:
 		print("")
-		print("\033[1;38;5;155mELF Header (offset for %s) =====================\033[0m" % ('32-bit' if ei_class == 1 else '64-bit'))
+		print("\x1b[1;38;5;201mELF Header (offset for %s) =====================\x1b[0m" % ('32-bit' if ei_class == 1 else '64-bit'))
 		print("Identification (0x0-0x8):                        %02x %02x %02x %02x (Magic: \\x7ELF)" %(ei_mag0, ei_mag1, ei_mag2, ei_mag3))
 		print("                                                 %02x %02x %02x %02x %02x" %(ei_class, ei_data, ei_version, ei_osabi, ei_abiversion))
 		print("Class (0x4):                                     0x%02x\t%s" %(ei_class, e_class))
@@ -490,8 +494,8 @@ def readelf(elf, args):
 			lastnull = i + 1
 	if print_ph:
 		print("")
-		print("\033[1;38;5;155mProgram Headers: =====================\033[0m")
-		print("%10s  0x%08s  0x%14s  0x%14s  0x%10s  0x%10s  %05s" %("Type", "Offset", "VirtAddr", "PhysAddr", "FileSiz", "MemSiz", "Flags"))
+		print("\x1b[1;38;5;201mProgram Headers: =====================\x1b[0m")
+		print("%10s %8s  %15s  %15s  %10s  %10s %05s" %("Type", "0x Offset", "0x VirtAddr", "0x PhysAddr", "0x FileSiz", "0x MemSiz", "Flags"))
 
 
 	e_shinterpndx = -1
@@ -510,7 +514,7 @@ def readelf(elf, args):
 			e_shinterpndx = i
 
 		if print_ph:
-			print("%10s  0x%08x  0x%014x  0x%014x  0x%010x  0x%010x  %05s" %(PT_TYPE[p_type] if p_type in PT_TYPE else p_type,p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, PT_FLAGS[p_flags]))
+			print("%10s  %8x  %15x  %15x  %10x  %10x %05s" %(PT_TYPE[p_type] if p_type in PT_TYPE else p_type,p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, PT_FLAGS[p_flags]))
 
 	if e_shinterpndx >= 0:
 		elf.seek(e_phoff + e_phentsize * e_shinterpndx)
@@ -522,7 +526,7 @@ def readelf(elf, args):
 		interp = elf.read(p_filesz)
 		if print_interp:
 			print("")
-			print("\033[1;38;5;155mInterp (the dynamic loader): =====================\033[0m")
+			print("\x1b[1;38;5;201mInterp (the dynamic loader): =====================\x1b[0m")
 			print(interp)
 
 	e_shsymndx = -1
@@ -533,8 +537,8 @@ def readelf(elf, args):
 
 	if print_sh:
 		print("")
-		print("\033[1;38;5;155mSection Headers =====================\033[0m")
-		print("[NR] %19s%15s%10s%10s%8s%8s%5s%5s%5s%6s" % ("Name", "Type", "Addr.", "Offset", "Size", "EntSize", "Flag", "Link", "Info", "Align"))
+		print("\x1b[1;38;5;201mSection Headers =====================\x1b[0m")
+		print("Nr  %19s%12s%15s%7s%7s%8s%5s%5s%5s%6s" % ("Name", "Type", "0x Address", "Offset", "Size", "EntSize", "Flag", "Link", "Info", "Align"))
 	for i in range(0, e_shnum):
 		elf.seek(e_shoff + e_shentsize * i)
 
@@ -555,7 +559,12 @@ def readelf(elf, args):
 
 		if sh_name in string_table:
 			if print_sh:
-				print("[%02d]%20s%15s%10x%10d%8d%8d%5s%5s%5s%6s" % (i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+				if sh_type in SH_TYPE and (SH_TYPE[sh_type] in SH_TYPE_HIGHLIGHT):
+					print("\x1b[38;5;198m%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s\x1b[0m" % (i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+				elif sh_type in SH_TYPE and (string_table[sh_name].lower() in SH_NAME_HIGHLIGHT):
+					print("\x1b[38;5;215m%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s\x1b[0m" % (i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+				else:
+					print("%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s" % (i, string_table[sh_name], SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
 
 			if string_table[sh_name] == '.symtab':
 				e_shsymndx = i
@@ -574,7 +583,7 @@ def readelf(elf, args):
 
 		else:
 			if print_sh:
-				print("[%02d]%20s%15s%10x%10d%8d%8d%5s%5s%5s%6s" % (i, sh_name, SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
+				print("%02d %20s%12s%15x%7d%7d%8d%5s%5s%5s%6s" % (i, sh_name, SH_TYPE[sh_type] if sh_type in SH_TYPE else sh_type, sh_addr, sh_offset, sh_size, sh_entsize, f, sh_link, sh_info, sh_addralign))
 
 
 	if e_shdynsym >= 0 and e_shdynstr >= 0:
@@ -606,9 +615,9 @@ def readelf(elf, args):
 		if print_symbol_table:
 			print("")
 			if ei_class == 1: # 32-bit
-				print("\033[1;38;5;155mSymbol Table '.dynsym' contains %d entries: =====================\033[0m" % (sh_size / 16))
+				print("\x1b[1;38;5;201mSymbol Table '.dynsym' contains %d entries: =====================\x1b[0m" % (sh_size / 16))
 			else: # 64-bit
-				print("\033[1;38;5;155mSymbol Table '.dynsym' contains %d entries: =====================\033[0m" % (sh_size / 24))
+				print("\x1b[1;38;5;201mSymbol Table '.dynsym' contains %d entries: =====================\x1b[0m" % (sh_size / 24))
 			print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
 
 		for i in range(0, sh_size / 24):
@@ -619,8 +628,12 @@ def readelf(elf, args):
 
 			if st_name in dynsymbol_table:
 				if print_symbol_table:
-					print("%4d%10d%10d%10s%10s%10s%10d%30s" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-						STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, dynsymbol_table[st_name],))
+					if STT_TYPE[ELF_ST_TYPE(st_info)] == "FUNC" and dynsymbol_table[st_name][0:2] == "main":
+						print("\x1b[38;5;198m%4d%10d%10d%10s%10s%10s%10d%30s\x1b[0m" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, dynsymbol_table[st_name],))
+					else:
+						print("%4d%10d%10d%10s%10s%10s%10d%30s" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, dynsymbol_table[st_name],))
 			else:
 				if print_symbol_table:
 					print("%4d%10d%10d%10s%10s%10s%10d%30d" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
@@ -656,9 +669,9 @@ def readelf(elf, args):
 	if print_symbol_table:
 		print("")
 		if ei_class == 1: # 32-bit
-			print("\033[1;38;5;155mSymbol Table '.symtab' contains %d entries: =====================\033[0m" % (sh_size / 16))
+			print("\x1b[1;38;5;201mSymbol Table '.symtab' contains %d entries: =====================\x1b[0m" % (sh_size / 16))
 		else: # 64-bit
-			print("\033[1;38;5;155mSymbol Table '.symtab' contains %d entries: =====================\033[0m" % (sh_size / 24))
+			print("\x1b[1;38;5;201mSymbol Table '.symtab' contains %d entries: =====================\x1b[0m" % (sh_size / 24))
 		print("%04s%10s%10s%10s%10s%10s%10s%30s" %("Num", "Value", "Size", "Type", "Bind", "Vis", "Ndx", "Name"))
 
 		for i in range(0, sh_size / 24):
@@ -669,8 +682,12 @@ def readelf(elf, args):
 
 			if st_name in symbol_table:
 				if print_symbol_table:
-					print("%4d%10d%10d%10s%10s%10s%10d%30s" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
-						STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, symbol_table[st_name],))
+					if STT_TYPE[ELF_ST_TYPE(st_info)] == "FUNC" and symbol_table[st_name] == "main":
+						print("\x1b[38;5;198m%4d%10d%10d%10s%10s%10s%10d%30s\x1b[0m" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, symbol_table[st_name],))
+					else:
+						print("%4d%10d%10d%10s%10s%10s%10d%30s" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
+							STB_BIND[ELF_ST_BIND(st_info)], STV_VISIBILITY[ELF_ST_VISIBILITY(st_other)], st_shndx, symbol_table[st_name],))
 			else:
 				if print_symbol_table:
 					print("%4d%10d%10d%10s%10s%10s%10d%30d" %(i, st_value, st_size, STT_TYPE[ELF_ST_TYPE(st_info)],
@@ -687,7 +704,7 @@ def readelf(elf, args):
 		dynamic_section = elf.read(sh_size)
 		if print_dynamic_section:
 			print("")
-			print("\033[1;38;5;155mDynamic Section =====================\033[0m")
+			print("\x1b[1;38;5;201mDynamic Section =====================\x1b[0m")
 			print("%20s %20s %20s" %("Tag", "Type", "Name/Value"))
 		if ei_class == 1: # 32-bit
 			pass
